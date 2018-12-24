@@ -1,0 +1,17 @@
+[
+  { "caption": "IrView: Set opt Path", "command": "ir_view_set_path"},
+
+  { "caption": "IrView: Call Graph", "command": "ir_view_call_graph" },
+  
+  { "caption": "IrView: cfg", "command": "ir_view_cfg" },
+  { "caption": "IrView: cfg-only (w/o function bodies)", "command": "ir_view_cfg_only"},
+  
+  { "caption": "IrView: dom", "command": "ir_view_dom"},
+  { "caption": "IrView: dom-only (w/o function bodies)", "command": "ir_view_dom_only"},
+
+  { "caption": "IrView: postdom", "command": "ir_view_postdom"},
+  { "caption": "IrView: postdom-only (w/o function bodies)", "command": "ir_view_postdom_only"},
+
+  { "caption": "IrView: regions", "command": "ir_view_regions"},
+  { "caption": "IrView: regions-only (w/o function bodies)", "command": "ir_view_regions_only"},
+]

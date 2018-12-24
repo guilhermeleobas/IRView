@@ -1,0 +1,11 @@
+{
+    // This is the path to the binary for `opt`. If it is in your path,
+    // it should just work out-of-the-box. Otherwise, you can set the full path,
+    // which will look like this: 
+    //    "binary": "/path/to/llvm/build/bin/opt"
+    // Note that you can set this from within ST directly through the Command
+    // Palette.
+    // Always prefer to use the absolute path instead of the relative one. 
+
+    "opt": "${HOME}/Programs/llvm/build/bin/opt",
+}
