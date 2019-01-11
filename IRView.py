@@ -53,72 +53,66 @@ def view(filename, pass_name):
   open_pdfs(pdfs)
 
 ###
-class IrViewCallGraphCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewCallGraphCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-callgraph')
 
 ###
-class IrViewCfgCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewCfgCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-cfg')
 
-class IrViewCfgOnlyCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewCfgOnlyCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-cfg-only')
 
 ###
-class IrViewDomCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewDomCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-dom')
 
-class IrViewDomOnlyCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewDomOnlyCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-dom-only')
 
 ###
-class IrViewPostdomCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewPostdomCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-postdom')
 
-class IrViewPostdomOnlyCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewPostdomOnlyCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-postdom-only')
 
 ###
-class IrViewRegionsCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewRegionsCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-regions')
 
-class IrViewRegionsOnlyCommand(sublime_plugin.WindowCommand):
-  def run(self):
-    filename = self.window.active_view().file_name()
+class IrViewRegionsOnlyCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
+    filename = self.view.file_name()
     view(filename, '-dot-regions-only')
 
 ###
 
 
-class IrViewSetPathCommand(sublime_plugin.WindowCommand):
-  def run(self):
+class IrViewSetPathCommand(sublime_plugin.TextCommand):
+  def run(self, edit):
     w = sublime.active_window()
     w.show_input_panel("Path to opt: ", "", set_path, None, None)
 
   def set_path(value):
     settings = sublime.load_settings(settings_file)
     binary = os.path.expanduser(os.path.expandvars(value))
-    print("binary path: {}".format(binary))
-    settings.set('binary', path)
+    print("opt path: {}".format(binary))
+    settings.set('opt', path)
     sublime.save_settings(settings_file)
-
-
-class ExampleCommand(sublime_plugin.TextCommand):
-  def run(self, edit):
-    # contents = self.view.substr(sublime.Region(0, self.view.size()))
-    print(self.view.file_name() + "hello world")
