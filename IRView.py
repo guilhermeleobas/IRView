@@ -1,23 +1,22 @@
 import sublime
 import sublime_plugin
+
 import os
+import shutil
+import tempfile
+
 from subprocess import Popen, PIPE
 
 settings_file = 'IRView.sublime-settings';
+TEMP = tempfile.gettempdir()
 
 def get_opt():
   return os.path.expanduser(
     os.path.expandvars(sublime.load_settings(settings_file).get('opt')))
 
 def cp_to_tmp(filename):
-  cmd = ['cp', filename, '/tmp']
-  p = Popen(cmd, stdout=PIPE, stderr=PIPE)
-
-  output, err = p.communicate()
-  if err:
-    print('Error while moving {} to /tmp'.format(filename))
-
-  return '/tmp/' + os.path.basename(filename)
+  shutil.copy(filename, TEMP)
+  return os.path.join(TEMP, os.path.basename(filename))
 
 def create_dots(opt, filename, pass_name):
   cmd = [opt, filename, pass_name, '-disable-output']
@@ -29,15 +28,15 @@ def create_dots(opt, filename, pass_name):
     .replace("Writing ", "").replace("'", "")\
     .strip('...\n').split('...\n')\
 
-  return list(map(lambda x: '/tmp/' + x, files))
+  return list(map(lambda x: os.path.join(TEMP, x), files))
 
 def create_pdfs(dotfiles):
   for f in dotfiles:
     basename = os.path.basename(f)
-    cmd = ['dot', '-Tpdf', f, '-o', '/tmp/' + basename + '.pdf']
+    cmd = ['dot', '-Tpdf', f, '-o', os.path.join(TEMP, basename + '.pdf')]
     Popen(cmd, stdout=None, stderr=None).communicate()
 
-  return ['/tmp/' + os.path.basename(f) + '.pdf' for f in dotfiles]
+  return [TEMP + os.path.basename(f) + '.pdf' for f in dotfiles]
 
 def open_pdfs(pdfs):
   for pdf in pdfs:
@@ -47,7 +46,7 @@ def open_pdfs(pdfs):
 def view(filename, pass_name):
   opt = get_opt()
   filename = cp_to_tmp(filename)
-  os.chdir('/tmp')
+  os.chdir(TEMP)
   dots = create_dots(opt, filename, pass_name)
   pdfs = create_pdfs(dots)
   open_pdfs(pdfs)
@@ -113,6 +112,5 @@ class IrViewSetPathCommand(sublime_plugin.TextCommand):
   def set_path(value):
     settings = sublime.load_settings(settings_file)
     binary = os.path.expanduser(os.path.expandvars(value))
-    print("opt path: {}".format(binary))
     settings.set('opt', path)
     sublime.save_settings(settings_file)
