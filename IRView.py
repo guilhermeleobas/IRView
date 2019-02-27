@@ -36,7 +36,7 @@ def create_pdfs(dotfiles):
     cmd = ['dot', '-Tpdf', f, '-o', os.path.join(TEMP, basename + '.pdf')]
     Popen(cmd, stdout=None, stderr=None).communicate()
 
-  return [TEMP + os.path.basename(f) + '.pdf' for f in dotfiles]
+  return [os.path.join(TEMP, os.path.basename(f) + '.pdf') for f in dotfiles]
 
 def open_pdfs(pdfs):
   for pdf in pdfs:
