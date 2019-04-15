@@ -43,63 +43,75 @@ def open_pdfs(pdfs):
     cmd = ['open', pdf]
     Popen(cmd, stdout=None, stderr=None).communicate()
 
-def view(filename, pass_name):
+def run_cmd(filename, pass_name, method=None):
   opt = get_opt()
   filename = cp_to_tmp(filename)
   os.chdir(TEMP)
   dots = create_dots(opt, filename, pass_name)
-  pdfs = create_pdfs(dots)
+  if method is None or method == 'all':
+    pdfs = create_pdfs(dots)
+  else:
+    pdfs = create_pdfs(list(filter(lambda x: method + '.dot' in x, dots)))
   open_pdfs(pdfs)
 
 ###
 class IrViewCallGraphCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-callgraph')
+    run_cmd(filename, '-dot-callgraph')
 
 ###
 class IrViewCfgCommand(sublime_plugin.TextCommand):
+
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-cfg')
+    methods = ['all']
+
+    for r in self.view.find_all(r'^define .*$'):
+      b = self.view.substr(r).find('@')
+      e = self.view.substr(r).find('(')
+      methods.append(self.view.substr(r)[b+1:e])
+
+    sublime.active_window().show_quick_panel(methods, 
+      lambda idx: None if idx == -1 else run_cmd(filename, '-dot-cfg', methods[idx]))
 
 class IrViewCfgOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-cfg-only')
+    run_cmd(filename, '-dot-cfg-only')
 
 ###
 class IrViewDomCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-dom')
+    run_cmd(filename, '-dot-dom')
 
 class IrViewDomOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-dom-only')
+    run_cmd(filename, '-dot-dom-only')
 
 ###
 class IrViewPostdomCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-postdom')
+    run_cmd(filename, '-dot-postdom')
 
 class IrViewPostdomOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-postdom-only')
+    run_cmd(filename, '-dot-postdom-only')
 
 ###
 class IrViewRegionsCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-regions')
+    run_cmd(filename, '-dot-regions')
 
 class IrViewRegionsOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    view(filename, '-dot-regions-only')
+    run_cmd(filename, '-dot-regions-only')
 
 ###
 
