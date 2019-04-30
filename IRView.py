@@ -43,79 +43,89 @@ def open_pdfs(pdfs):
     cmd = ['open', pdf]
     Popen(cmd, stdout=None, stderr=None).communicate()
 
-def run_cmd(filename, pass_name, method=None):
-  opt = get_opt()
-  filename = cp_to_tmp(filename)
-  os.chdir(TEMP)
-  dots = create_dots(opt, filename, pass_name)
-  if method is None or method == 'all':
-    pdfs = create_pdfs(dots)
-  else:
-    pdfs = create_pdfs(list(filter(lambda x: method + '.dot' in x, dots)))
-  open_pdfs(pdfs)
+
+def find_methods_name(view):
+  names = ['all']
+  for r in view.find_all(r'^define .*$'):
+    b = view.substr(r).find('@')
+    e = view.substr(r).find('(')
+    names.append(view.substr(r)[b+1:e])
+  return names
+
+def run_cmd(view, filename, pass_name):
+
+  def _run_cmd(filename, pass_name, method=None):
+    opt = get_opt()
+    filename = cp_to_tmp(filename)
+    os.chdir(TEMP)
+    dots = create_dots(opt, filename, pass_name)
+    if method is None or method == 'all':
+      pdfs = create_pdfs(dots)
+    else:
+      pdfs = create_pdfs(list(filter(lambda x: method + '.dot' in x, dots)))
+    open_pdfs(pdfs)
+
+  names = find_methods_name(view)
+  sublime.active_window().show_quick_panel(names,
+    lambda idx: None if idx == -1 else _run_cmd(filename, pass_name, names[idx]))
 
 ###
-class IrViewCallGraphCommand(sublime_plugin.TextCommand):
+class IrViewCallGraphCommand(sublime_plugin.TextCommand, IRView):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-callgraph')
+    run_cmd(self.view, filename, '-dot-callgraph')
 
 ###
 class IrViewCfgCommand(sublime_plugin.TextCommand):
 
   def run(self, edit):
     filename = self.view.file_name()
-    methods = ['all']
+    run_cmd(self.view, filename, '-dot-cfg')
+    # methods = ['all']
 
-    for r in self.view.find_all(r'^define .*$'):
-      b = self.view.substr(r).find('@')
-      e = self.view.substr(r).find('(')
-      methods.append(self.view.substr(r)[b+1:e])
 
-    sublime.active_window().show_quick_panel(methods, 
-      lambda idx: None if idx == -1 else run_cmd(filename, '-dot-cfg', methods[idx]))
+    # sublime.active_window().show_quick_panel(methods, 
+    #   lambda idx: None if idx == -1 else run_cmd(self.view, filename, '-dot-cfg', methods[idx]))
 
 class IrViewCfgOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-cfg-only')
+    run_cmd(self.view, filename, '-dot-cfg-only')
 
 ###
 class IrViewDomCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-dom')
+    run_cmd(self.view, filename, '-dot-dom')
 
 class IrViewDomOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-dom-only')
+    run_cmd(self.view, filename, '-dot-dom-only')
 
 ###
 class IrViewPostdomCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-postdom')
+    run_cmd(self.view, filename, '-dot-postdom')
 
 class IrViewPostdomOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-postdom-only')
+    run_cmd(self.view, filename, '-dot-postdom-only')
 
 ###
 class IrViewRegionsCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-regions')
+    run_cmd(self.view, filename, '-dot-regions')
 
 class IrViewRegionsOnlyCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
-    run_cmd(filename, '-dot-regions-only')
+    run_cmd(self.view, filename, '-dot-regions-only')
 
 ###
-
-
 class IrViewSetPathCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     w = sublime.active_window()
