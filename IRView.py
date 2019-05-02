@@ -70,7 +70,7 @@ def run_cmd(view, filename, pass_name):
     lambda idx: None if idx == -1 else _run_cmd(filename, pass_name, names[idx]))
 
 ###
-class IrViewCallGraphCommand(sublime_plugin.TextCommand, IRView):
+class IrViewCallGraphCommand(sublime_plugin.TextCommand):
   def run(self, edit):
     filename = self.view.file_name()
     run_cmd(self.view, filename, '-dot-callgraph')
