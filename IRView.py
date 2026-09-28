@@ -131,8 +131,8 @@ class IrViewSetPathCommand(sublime_plugin.TextCommand):
     w = sublime.active_window()
     w.show_input_panel("Path to opt: ", "", set_path, None, None)
 
-  def set_path(value):
+  def set_path(self, value):
     settings = sublime.load_settings(settings_file)
     binary = os.path.expanduser(os.path.expandvars(value))
-    settings.set('opt', path)
+    settings.set('opt', value)
     sublime.save_settings(settings_file)
